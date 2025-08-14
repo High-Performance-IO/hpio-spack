@@ -14,7 +14,7 @@ class Capio(CMakePackage):
     maintainers("marcoSanti", "GlassOfWhiskey")
     license("MIT")
 
-    # Versions
+    # Branches
     version("capio-v2", branch="capio-v2", preferred=True)  
 
     # Releases   
@@ -38,14 +38,11 @@ class Capio(CMakePackage):
 
     def cmake_args(self) -> List[str]:
         target = "Debug" if "+debug" in self.spec else "Release"
-        logger = "On" if "+log" in self.spec else "Off"
-        tests  = "On" if "+tests" in self.spec else "Off"
-        args = [
-            f"-DCMAKE_BUILD_TYPE={target}",
-            f"-DCAPIO_LOG={logger}",
-            f"-DCAPIO_BUILD_TESTS={tests}"
+        return [
+            self.define("MAKE_BUILD_TYPE", target),
+            self.define_from_variant("CAPIO_LOG", "log"),
+            self.define_from_variant("CAPIO_BUILD_TESTS", "tests")
         ]
-        return args
     
     def setup_build_environment(self, env: EnvironmentModifications) -> None:
         import multiprocessing
